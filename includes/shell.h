@@ -13,6 +13,6 @@
 #define BIN_PATH "./bin/"
 
 void type_prompt();
-void read_command(char **cmd);
+int read_command(char **cmd); // Returns 1 on EOF, 0 otherwise
 
 #endif

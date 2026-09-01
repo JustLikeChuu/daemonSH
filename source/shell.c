@@ -1,10 +1,7 @@
-// This code was written by ChatGPT4
-// Modify it for your own usage to implement features for PA1 (or completely
-// rewrite it) Include the shell header file for necessary constants and
-// function declarations
 #include "shell.h"
 
 // Function to read a command from the user input
+// Returns 1 if EOF was hit before any input, 0 otherwise
 void read_command(char **cmd)
 {
   // Define a character array to store the command line input
@@ -14,17 +11,30 @@ void read_command(char **cmd)
   // Array to hold pointers to the parsed command arguments
   char *array[MAX_ARGS], *command_token;
 
-  // Infinite loop to read characters until a newline or maximum line length is
-  // reached
+  // Infinite loop to read characters until a newline or maximum line length is reached
   for (;;)
   {
     // Read a single character from standard input
     int current_char = fgetc(stdin);
+
+    if (current_char == EOF)
+    {
+      if (count == 0)
+      {
+        return 1; // Nothing typed yet, tell the caller to exit
+      }
+      break; // Partial line before EOF, treat like a newline
+    }
+
     // Store the character in the line array and increment count
     line[count++] = (char)current_char;
+
     // If a newline character is encountered, break out of the loop
     if (current_char == '\n')
+    {
       break;
+    }
+
     // If the command exceeds the maximum length, print an error and exit
     if (count >= MAX_LINE)
     {
@@ -32,12 +42,16 @@ void read_command(char **cmd)
       exit(1);
     }
   }
+
   // Null-terminate the command line string
   line[count] = '\0';
 
   // If only the newline character was entered, return without processing
-  if (count == 1)
-    return;
+  if (count <= 1)
+  {
+    cmd[0] = NULL;
+    return 0;
+  }
 
   // Use strtok to parse the first token (word) of the command
   command_token = strtok(line, " \n");
@@ -56,6 +70,7 @@ void read_command(char **cmd)
   }
   // Null-terminate the cmd array to mark the end of arguments
   cmd[i] = NULL;
+  return 0;
 }
 
 // Function to display the shell prompt

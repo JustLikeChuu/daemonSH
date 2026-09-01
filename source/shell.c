@@ -1,8 +1,9 @@
 #include "shell.h"
+#include "builtins.h"
 
 // Function to read a command from the user input
 // Returns 1 if EOF was hit before any input, 0 otherwise
-void read_command(char **cmd)
+int read_command(char **cmd)
 {
   // Define a character array to store the command line input
   char line[MAX_LINE];
@@ -80,14 +81,53 @@ void type_prompt()
   static int first_time = 1;
   if (first_time)
   {
-    // Clear the screen on the first call
-#ifdef _WIN32
-    system("cls"); // Windows command to clear screen
-#else
-    system("clear"); // UNIX/Linux command to clear screen
-#endif
+    if (isatty(fileno(stdin)))
+    {
+      printf("\033[H\033[J"); // ANSI: cursor home + clear screen
+    }
+
+    char cwd[PATH_MAX];
+    getcwd(cwd, sizeof(cwd));
+
+    printf("========================================\n");
+    printf("  Welcome to daemonSH\n");
+    printf("========================================\n");
+    printf("Working directory: %s\n", cwd);
+    printf("PATH: %s\n", getenv("PATH"));
+    printf("Type 'help' to see available commands.\n");
+    printf("----------------------------------------\n");
+
     first_time = 0;
   }
   fflush(stdout); // Flush the output buffer
   printf("$$ ");  // Print the shell prompt
+}
+
+int execute_command(char **cmd)
+{
+  if (is_builtin(cmd[0]))
+  {
+    return run_builtin(cmd); // 1 signals "exit" was run
+  }
+
+  pid_t pid = fork();
+  if (pid < 0)
+  {
+    perror("Fork failed!");
+    return 0;
+  }
+  else if (pid == 0)
+  {
+    // Child: PATH-based lookup, covers both ./bin/ and anything
+    // .cseshellrc's PATH= line added.
+    execvp(cmd[0], cmd);
+    printf("Command %s not found\n", cmd[0]);
+    exit(1);
+  }
+  else
+  {
+    int status;
+    waitpid(pid, &status, 0);
+    return 0;
+  }
 }

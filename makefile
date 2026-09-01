@@ -82,18 +82,8 @@ integration: $(MAIN_EXEC) $(SYSTEM_PROGRAM_BINS)
 
 test: unit integration
 
-ai-unit-tests:
-	@if [ -z "$(MODULE)" ]; then \
-	  echo "Usage: make ai-unit-tests MODULE=name"; \
-	  echo "  Looks for includes/libs/name.h and source/libs/name.c"; \
-	  echo "  Generates tests/unit/test_name.c"; \
-	  exit 1; \
-	fi
-	@bash ./scripts/gen_unit_tests.sh $(MODULE)
-
-clean:
 clean:
 	rm -f $(SYSTEM_PROGRAM_BINS) $(MAIN_EXEC)
 	rm -rf $(UNIT_BIN_DIR)
 
-.PHONY: all clean unit integration test ai-unit-tests
+.PHONY: all clean unit integration test

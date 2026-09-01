@@ -15,4 +15,7 @@
 void type_prompt();
 int read_command(char **cmd); // Returns 1 on EOF, 0 otherwise
 
+int execute_command(char **cmd); 
+// Runds cmd in-process if its builtin, otherwise fork/exec/wait via PATH
+// Returns 1 if the shell should exit, 0 otherwise
 #endif

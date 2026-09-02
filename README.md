@@ -58,15 +58,14 @@ make integration # black-box bash scripts that drive ./daemonshell as a subproce
 11 unit tests, 7 integration tests, all passing as of this writing.
 
 ## Layout
-source/ Shell loop, builtins, .daemonshellrc loader
-libs/ Pure, unit-testable helpers
-system_programs/ The seven bin/ programs
-includes/ Matching headers
-tests/
-unit/ Unity tests for source/libs/
-integration/ Bash scripts exercising the built shell end to end
-files/ Fixture data the integration tests run against
-
+- source/ Shell loop, builtins, .daemonshellrc loader
+- libs/ Pure, unit-testable helpers
+- system_programs/ The seven bin/ programs
+- includes/ Matching headers
+- tests/
+- unit/ Unity tests for source/libs/
+- integration/ Bash scripts exercising the built shell end-to-end
+- files/ Fixture data the integration tests run against
 
 ## Credit
 

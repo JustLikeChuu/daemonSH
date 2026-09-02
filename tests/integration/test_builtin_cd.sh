@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-OUTPUT=$(printf "cd files\nld\nexit\n" | timeout 3s ./cseshell)
+OUTPUT=$(printf "cd files\nld\nexit\n" | timeout 3s ./daemonshell)
 
 if ! echo "$OUTPUT" | grep -F "file1.txt" > /dev/null; then
   echo "FAIL: after 'cd files', expected ld to show file1.txt"

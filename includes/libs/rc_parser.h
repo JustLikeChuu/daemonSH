@@ -4,12 +4,12 @@
 /*
  * rc_parser.h
  *
- * Example pure helper for classifying lines from .cseshellrc.
+ * Example pure helper for classifying lines from .daemonshellrc.
  *
  * This file is OPTIONAL. You are not required to use this helper in your
  * shell. It exists as a demonstration of:
  *
- *   1. How to extract a pure function from your .cseshellrc reader so it
+ *   1. How to extract a pure function from your .daemonshellrc reader so it
  *      can be unit tested without spawning the shell.
  *   2. How tests/unit/test_rc_parser.c links against this file via the
  *      makefile convention (tests/unit/test_FOO.c pairs with source/FOO.c).
@@ -29,7 +29,7 @@ typedef enum {
 } rc_line_type_t;
 
 /*
- * Classify one line from .cseshellrc.
+ * Classify one line from .daemonshellrc.
  *
  *   On RC_LINE_PATH:    *value points to the substring after "PATH=".
  *   On RC_LINE_COMMAND: *value points to the trimmed command text.

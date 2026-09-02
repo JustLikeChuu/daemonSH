@@ -8,7 +8,7 @@
 
 #define MAX_PATH_ENV 4096
 
-// Runs one already-tokenized command line from .cseshellrc through the same path builtins/external commands take at the interactive prompt.
+// Runs one already-tokenized command line from .daemonshellrc through the same path builtins/external commands take at the interactive prompt.
 static int run_rc_command(const char *command_line)
 {
     char line[MAX_LINE];
@@ -31,10 +31,10 @@ static int run_rc_command(const char *command_line)
     return execute_command(cmd);
 }
 
-int load_cseshellrc(const char *base_dir)
+int load_daemonshellrc(const char *base_dir)
 {
     char rc_path[PATH_MAX];
-    snprintf(rc_path, sizeof(rc_path), "%s/.cseshellrc", base_dir);
+    snprintf(rc_path, sizeof(rc_path), "%s/.daemonshellrc", base_dir);
 
     FILE *rc = fopen(rc_path, "r");
     if (rc == NULL)

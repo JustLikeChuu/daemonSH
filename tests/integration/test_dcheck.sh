@@ -16,7 +16,7 @@ sleep 1
 rm -f dspawn.log
 
 # Baseline: zero daemons running.
-OUTPUT=$(printf "dcheck\nexit\n" | timeout 3s ./cseshell | sed -r "s/\x1b\[[0-9;]*m//g")
+OUTPUT=$(printf "dcheck\nexit\n" | timeout 3s ./daemonshell | sed -r "s/\x1b\[[0-9;]*m//g")
 if ! echo "$OUTPUT" | grep -F "Live dspawn daemons: 0" > /dev/null; then
   echo "FAIL: expected 0 live daemons with none spawned"
   echo "----- shell output -----"
@@ -27,11 +27,11 @@ fi
 
 # Spawn two daemons in one shell session, then exit. dspawn returns almost
 # instantly; the daemons themselves keep running independently afterward.
-printf "dspawn\ndspawn\nexit\n" | timeout 3s ./cseshell > /dev/null
+printf "dspawn\ndspawn\nexit\n" | timeout 3s ./daemonshell > /dev/null
 sleep 1
 
 # Check the count from a fresh shell session.
-OUTPUT=$(printf "dcheck\nexit\n" | timeout 3s ./cseshell | sed -r "s/\x1b\[[0-9;]*m//g")
+OUTPUT=$(printf "dcheck\nexit\n" | timeout 3s ./daemonshell | sed -r "s/\x1b\[[0-9;]*m//g")
 if ! echo "$OUTPUT" | grep -F "Live dspawn daemons: 2" > /dev/null; then
   echo "FAIL: expected 2 live daemons after spawning 2"
   echo "----- shell output -----"

@@ -88,7 +88,7 @@ int main(void)
     printf(COLOR_CYAN "Kernel:   " COLOR_RESET "%s\n", sys_info.release);
     printf(COLOR_CYAN "Uptime:   " COLOR_RESET "%ldh %ldm\n", uptime_hr, uptime_min);
     printf(COLOR_CYAN "User:     " COLOR_RESET "%s\n", username);
-    printf(COLOR_CYAN "Shell:    " COLOR_RESET "cseshell\n");
+    printf(COLOR_CYAN "Shell:    " COLOR_RESET "daemonshell\n");
     printf(COLOR_CYAN "CPU:      " COLOR_RESET "%s\n", cpu_model);
     printf(COLOR_CYAN "Memory:   " COLOR_RESET "%lu MiB / %lu MiB\n", used_mem_mb, total_mem_mb);
     printf(COLOR_CYAN "Disk (/): " COLOR_RESET "%.1f GiB / %.1f GiB (%d%%)\n", disk_used_gb, disk_total_gb, disk_percent);

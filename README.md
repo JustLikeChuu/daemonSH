@@ -1,113 +1,76 @@
-# CSEShell
+# daemonSH
 
-CSEShell is a simple, custom shell for Unix-based systems, designed to provide an interface for executing system programs. This project includes a basic shell implementation, a set of system programs (`find`, `ld`, `ldr`), and some test files.
+A custom Unix shell in C built on top of the starter for SUTD 50.005's PA1
+assignment, then taken well beyond the base requirements as a personal,
+post-course rebuild.
 
-## Directory Structure
+![daemonSH sys command output](docs/sys-demo.png)
 
-The project is organized as follows:
+## What it does
 
-- `bin/` - Contains compiled executables for system programs.
-  - `find` - Program to find files.
-  - `ld` - Program for listing the contents of the current directory.
-  - `ldr` - Program for listing the contents of the current directory recursively.
-- `cseshell` - The main executable for the CSEShell.
-- `files/` - Contains various test files used with the shell and system programs.
-  - `combined.txt`, `file1.txt`, `file2.txt`, ... - Test text files.
-  - `notes.pdf` - A PDF file for testing.
-  - `ss.png` - An image file.
-- `makefile` - Makefile for building the CSEShell and system programs.
-- `source/` - Source code for the shell and system programs.
-  - `libs/` - Contain matching `foo.h` and `foo.c` helper functions, unit-testable.
-  - `shell.c` and `shell.h` - Source and header files for the shell.
-  - `system_programs/` - Source code and header for the system programs.
-- `tests/` - Unit and integration tests.
-  - `unit/` - C unit tests using the Unity framework.
-  - `integration/` - Bash scripts that run `./cseshell` as a black box.
-  - `unity/` - Vendored Unity test framework (`unity.c`, `unity.h`, `unity_internals.h`).
-- `scripts/` - Helper scripts, including the AI-assisted test generator.
-- `prompts/` - Prompt templates used by the AI test generator.
-- `AGENTS.md` - Guide for AI coding agents working in this project.
+- **Real shell loop.** The starter shell ran exactly one command and exited
+  (`execv` replaces the process image with no `fork`/loop around it). This
+  implements the actual `fork` → `exec` → `wait` → re-prompt cycle, plus
+  graceful handling of blank input and `Ctrl+D`.
 
-## Building the Project
+- **Seven builtins**, run in-process (never forked, since things like `cd`
+  need to persist in the shell's own state): `cd`, `help`, `exit`, `usage`,
+  `env`, `setenv`, `unsetenv`.
 
-To build the CSEShell and system programs, run the following command in the root directory:
+- **`.daemonshellrc` startup config.** On launch, the shell reads
+  `.daemonshellrc` from its working directory if present. Two directive
+  types: `PATH=...` extends where external commands are looked up, and any
+  other line is run as a startup command before the first prompt.
 
-```bash
-make
-```
+- **PATH is opt-in, not inherited.** By default the shell only knows its own
+  bundled `bin/` programs plus the seven builtins — nothing from the host
+  system's `PATH` is visible unless `.daemonshellrc` explicitly adds it.
+  Bundled `bin/` always takes priority even when more directories are added,
+  so a same-named system binary (e.g. `/usr/bin/ld`, the real linker) can
+  never shadow this shell's own `ld`.
 
-This will compile the source code and place the executable files in the appropriate directories.
+- **Seven bundled system programs** under `bin/`, built alongside the shell:
+  - `find`, `ld`, `ldr` — from the original assignment scope.
+  - `sys` — a small neofetch-style system info dump (OS, kernel, CPU,
+    memory, disk, uptime), shown above.
+  - `dspawn` — spawns a proper Unix daemon via the full double-fork,
+    `setsid`, signal-handling, fd-redirection sequence, not just a
+    backgrounded process.
+  - `dcheck` — counts how many `dspawn` daemons are currently alive.
+  - `backup` — zips whatever `$BACKUP_DIR` points to (a file or a
+    directory) into a timestamped archive under `archive/`.
 
-## Running CSEShell
-
-After building, you can start the shell by running:
-
-```bash
-./cseshell
-```
-
-From there, you can execute built-in commands and any of the included system programs (e.g., `find`, `ld`, `ldr`).
-
-## System Programs
-
-- `find.c` - Searches for files in a directory.
-- `ld.c` - List the contents of the curent directory.
-- `ldr.c` - List the contents of the current directory recursively.
-
-Each program can be executed from the CSEShell once it is running. This starter code only allows the shell to execute a command once before exiting because `execv` replace the entire process' address space. Students need to fix this and allow the shell to prompt for more commands in Programming Assignment 1.
-
-## Files Directory
-
-The `files/` directory contains various text, PDF, and image files for testing the functionality of the CSEShell and its system programs.
-
-## Makefile
-
-The Makefile contains rules for compiling the shell and system programs. You can clean the build by running:
+## Building and running
 
 ```bash
-make clean
+make            # builds ./daemonshell and everything under bin/
+./daemonshell
 ```
-
-## Source Directory
-
-Contains all the necessary source code for the shell and system programs. It is divided into the shell implementation (`shell.c`, `shell.h`) and system programs (`system_programs/`).
 
 ## Testing
 
-This project ships with two layers of tests:
-
-- **Unit tests** in `tests/unit/`. Small C programs that exercise pure helper functions directly, using the Unity framework. You can create any matching `test_foo.c` under `tests/unit` to test any libs under `source/libs/foo.c` by including the matching `source/libs/foo.h` header file in the unit test. See `tests/unit/test_perms.c` (or `test_rc_parser.c`) for example.
-- **Integration tests** in `tests/integration/`. Bash scripts that run the compiled `./cseshell` as a subprocess, feed it `stdin`, and check `stdout`.
-  - You should create your own integration tests. These samples given are just samples, adjust it accordingly.
-
-Run all tests:
-
 ```bash
-make test
+make test       # unit + integration
+make unit       # Unity-based tests for pure helpers (perms, .daemonshellrc parsing)
+make integration # black-box bash scripts that drive ./daemonshell as a subprocess
 ```
 
-Run only unit tests:
+11 unit tests, 7 integration tests, all passing as of this writing.
 
-```bash
-make unit
-```
+## Layout
+source/ Shell loop, builtins, .daemonshellrc loader
+libs/ Pure, unit-testable helpers
+system_programs/ The seven bin/ programs
+includes/ Matching headers
+tests/
+unit/ Unity tests for source/libs/
+integration/ Bash scripts exercising the built shell end to end
+files/ Fixture data the integration tests run against
 
-Run only integration tests (requires that `make` has been run first so `cseshell` and the system program binaries exist):
 
-```bash
-make integration
-```
+## Credit
 
-For an explanation of what to test and how to structure your testable code, see the testing handout.
-
-### AI-Assisted Unit Test Generation
-
-This project includes an optional wrapper for drafting unit tests with an AI agent. After writing a helper, you can run:
-
-```bash
-make ai-unit-tests MODULE=<helper_name>
-```
-
-This invokes `scripts/gen_unit_tests.sh`, which builds a prompt from `prompts/generate-unit-tests.md` and `AGENTS.md`. The script either pipes the prompt to your configured agent (via the `CSESHELL_AGENT_CMD` environment variable) or prints it to stdout for you to paste into a chat interface. See `AGENTS.md` for setup details and the rules agents follow.
-
-You remain responsible for every test in your submission. You must be able to explain each test during checkoff.
+Forked from [`natalieagus/cse-pa1-starter-template`](https://github.com/natalieagus/cse-pa1-starter-template),
+the starter scaffold for SUTD 50.005's PA1. Everything beyond the original
+one-shot shell and the three bundled programs (`find`/`ld`/`ldr`) is my own
+solo rebuild, done after the course had concluded.

@@ -8,9 +8,9 @@
 set -euo pipefail
 
 # setenv then env should show the new variable.
-OUTPUT=$(printf "setenv CSESHELL_TEST=hello\nenv\nexit\n" | timeout 3s ./cseshell)
-if ! echo "$OUTPUT" | grep -F "CSESHELL_TEST=hello" > /dev/null; then
-  echo "FAIL: setenv did not register CSESHELL_TEST=hello in env output"
+OUTPUT=$(printf "setenv DAEMONSHELL_TEST=hello\nenv\nexit\n" | timeout 3s ./daemonshell)
+if ! echo "$OUTPUT" | grep -F "DAEMONSHELL_TEST=hello" > /dev/null; then
+  echo "FAIL: setenv did not register DAEMONSHELL_TEST=hello in env output"
   echo "----- shell output -----"
   echo "$OUTPUT"
   echo "------------------------"
@@ -18,9 +18,9 @@ if ! echo "$OUTPUT" | grep -F "CSESHELL_TEST=hello" > /dev/null; then
 fi
 
 # setenv then unsetenv then env should NOT show the variable.
-OUTPUT=$(printf "setenv CSESHELL_TEST=hello\nunsetenv CSESHELL_TEST\nenv\nexit\n" | timeout 3s ./cseshell)
-if echo "$OUTPUT" | grep -F "CSESHELL_TEST=hello" > /dev/null; then
-  echo "FAIL: unsetenv did not remove CSESHELL_TEST"
+OUTPUT=$(printf "setenv DAEMONSHELL_TEST=hello\nunsetenv DAEMONSHELL_TEST\nenv\nexit\n" | timeout 3s ./daemonshell)
+if echo "$OUTPUT" | grep -F "DAEMONSHELL_TEST=hello" > /dev/null; then
+  echo "FAIL: unsetenv did not remove DAEMONSHELL_TEST"
   echo "----- shell output -----"
   echo "$OUTPUT"
   echo "------------------------"

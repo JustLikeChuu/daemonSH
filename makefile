@@ -12,12 +12,12 @@ SYSTEM_PROGRAM_BINS = $(SYSTEM_PROGRAM_SOURCES:$(SRC_DIR)/%.c=$(BIN_DIR)/%)
 
 # Compile every .c file directly under source/
 # plus every .c file under source/libs/
-# into cseshell.
+# into daemonshell.
 MAIN_SOURCES = \
 	$(wildcard $(SRC_ROOT)/*.c) \
 	$(LIB_SOURCES)
 
-MAIN_EXEC = cseshell
+MAIN_EXEC = daemonshell
 
 CFLAGS = -I$(INC_DIR) -Wall -Wextra
 

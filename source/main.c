@@ -17,13 +17,13 @@ int main(void)
     }
 
     // Bundled system programs live at <base_dir>/bin.
-    // This is the shell's PATH until/unless .cseshellrc extends it with PATH=.
+    // This is the shell's PATH until/unless .daemonshellrc extends it with PATH=.
     char initial_path[PATH_MAX];
     snprintf(initial_path, sizeof(initial_path), "%s/bin", base_dir);
     setenv("PATH", initial_path, 1);
 
-    if (load_cseshellrc(base_dir) == 1)
-        return 0; // .cseshellrc itself called "exit"
+    if (load_daemonshellrc(base_dir) == 1)
+        return 0; // .daemonshellrc itself called "exit"
 
     for (;;)
     {
